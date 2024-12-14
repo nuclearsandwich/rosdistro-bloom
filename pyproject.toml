@@ -1,0 +1,28 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "rosdistro-bloom"
+version = "0.1.0"
+description = "Utility scripts for migrating packages between rosdistros."
+readme = "README.md"
+requires-python = ">= 3.6"
+license = { file = "LICENSE" }
+
+dependencies = [
+  "bloom>=0.11.0",
+  "pygithub>=1.45",
+  "pyyaml>=5.3",
+  "rosdep>=0.21.0",
+  "rosdistro>=0.8.0",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "ruff",
+]
+
+[project.scripts]
+#rosdistro-bloom = "rosdistro-bloom:main"

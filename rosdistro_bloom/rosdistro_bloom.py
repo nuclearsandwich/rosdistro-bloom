@@ -13,7 +13,7 @@ from bloom.git import inbranch, show
 import github
 import yaml
 
-from rosdistro import DistributionFile, get_distribution_cache, get_distribution_file, get_index
+from rosdistro import DistributionFile, get_distribution_file, get_index
 from rosdistro.writer import yaml_from_distribution_file
 
 # These functions are adapted from Bloom's internal 'get_tracks_dict_raw' and

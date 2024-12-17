@@ -25,4 +25,4 @@ test = [
 ]
 
 [project.scripts]
-#rosdistro-bloom = "rosdistro-bloom:main"
+rosdistro-bloom = "rosdistro_bloom.cmd:main"

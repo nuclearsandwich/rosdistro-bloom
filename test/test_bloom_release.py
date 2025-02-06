@@ -59,21 +59,32 @@ def test_bloom_release_same_distro_patches(tmp_path, rosdistro):
 
 def test_bloom_release_new_distro_no_patches(tmp_path, rosdistro):
     source_dist = rosdistro("rolling", {"testpkg": {"type": "git", "version": "1.0.0-1", "url": "https://github.com/rosdistro-bloom-testing/testpkg-release.git"}})
-    dest_dist = rosdistro("jazzy")
+    dest_dist = rosdistro("jazzy", {"testpkg": {"type": "git", "version": "1.0.0-1", "url": "https://github.com/rosdistro-bloom-testing/testpkg-release.git"}})
     with chdir(tmp_path):
         with GitReleaseRepository("testpkg", source_dist, dest_dist).clone() as bloom_repo:
+            bloom_repo.copy_release_track()
+            bloom_repo.copy_refs()
+            with inbranch("release/jazzy/testpkg"):
+                assert Path("package.xml").is_file()
             bloom_repo.bloom_release()
             assert dest_dist.repositories["testpkg"].release_repository.version == "1.0.0-2"
-            with inbranch("release/rolling/testpkg"):
+
+
+@pytest.mark.xfail
+def test_bloom_release_new_distro_patches(tmp_path, rosdistro):
+    source_dist = rosdistro("rolling", {"testpkg": {"type": "git", "version": "1.0.0-2", "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git"}})
+    dest_dist = rosdistro("jazzy", {"testpkg": {"type": "git", "version": "1.0.0-2", "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git"}})
+    with chdir(tmp_path):
+        with GitReleaseRepository("testpkg", source_dist, dest_dist).clone() as bloom_repo:
+            bloom_repo.copy_release_track()
+            bloom_repo.copy_refs()
+            bloom_repo.bloom_release()
+            assert dest_dist.repositories["testpkg"].release_repository.version == "1.0.0-3"
+            with inbranch("release/jazzy/testpkg/1.0.0-3"):
                 assert (tmp_path / bloom_repo.release_repo / "releasepatch").is_file()
-            with inbranch("debian/rolling/testpkg"):
+            with inbranch("debian/ros-jazzy-testpkg_1.0.0-3_noble"):
                 assert (tmp_path / bloom_repo.release_repo / "releasepatch").is_file()
                 assert (tmp_path / bloom_repo.release_repo / "debianpatch").is_file()
-            with inbranch("debian/rolling/testpkg"):
+            with inbranch("rpm/ros-jazzy-testpkg-1.0.0-3_9"):
                 assert (tmp_path / bloom_repo.release_repo / "releasepatch").is_file()
                 assert (tmp_path / bloom_repo.release_repo / "rpmpatch").is_file()
-    pass
-
-
-def test_bloom_release_new_distro_patches():
-    pass

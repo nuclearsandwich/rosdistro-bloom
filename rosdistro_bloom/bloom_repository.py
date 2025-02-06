@@ -23,6 +23,7 @@ class GitReleaseRepository:
         name = self.url.split("/")[-1]
         if name.endswith(".git"):
             name = name[:-4]
+        return name
 
     @cached_property
     def url(self):

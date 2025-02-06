@@ -5,6 +5,8 @@ from contextlib import chdir
 from pathlib import Path
 from unittest.mock import Mock
 
+from bloom.git import inbranch
+
 from rosdistro_bloom.bloom_repository import GitReleaseRepository
 
 
@@ -30,19 +32,46 @@ def rosdistro():
 
 
 def test_bloom_release_same_distro(tmp_path, rosdistro):
-    source_dist = rosdistro("rolling", {"apriltag": {"type": "git", "version": "3.4.2-1", "url": "https://github.com/rosdistro-bloom-testing/apriltag-release.git"}})
-    dest_dist = rosdistro("rolling", {"apriltag": {"type": "git", "version": "3.4.2-1", "url": "https://github.com/rosdistro-bloom-testing/apriltag-release.git"}})
+    source_dist = rosdistro("rolling", {"testpkg": {"type": "git", "version": "1.0.0-1", "url": "https://github.com/rosdistro-bloom-testing/testpkg-release.git"}})
+    dest_dist = rosdistro("rolling", {"testpkg": {"type": "git", "version": "1.0.0-1", "url": "https://github.com/rosdistro-bloom-testing/testpkg-release.git"}})
     with chdir(tmp_path):
-        with GitReleaseRepository("apriltag", source_dist, dest_dist).clone() as bloom_repo:
+        with GitReleaseRepository("testpkg", source_dist, dest_dist).clone() as bloom_repo:
             bloom_repo.bloom_release()
-            assert dest_dist.repositories["apriltag"].release_repository.version == "3.4.2-5"
+            assert dest_dist.repositories["testpkg"].release_repository.version == "1.0.0-2"
 
 
-def test_bloom_release_same_distro_patches():
-    pass
+def test_bloom_release_same_distro_patches(tmp_path, rosdistro):
+    source_dist = rosdistro("rolling", {"testpkg": {"type": "git", "version": "1.0.0-2", "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git"}})
+    dest_dist = rosdistro("rolling", {"testpkg": {"type": "git", "version": "1.0.0-2", "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git"}})
+    with chdir(tmp_path):
+        with GitReleaseRepository("testpkg", source_dist, dest_dist).clone() as bloom_repo:
+            bloom_repo.bloom_release()
+            assert dest_dist.repositories["testpkg"].release_repository.version == "1.0.0-3"
+            with inbranch("release/rolling/testpkg/1.0.0-3"):
+                assert (tmp_path / bloom_repo.release_repo / "releasepatch").is_file()
+            with inbranch("debian/ros-rolling-testpkg_1.0.0-2_noble"):
+                assert (tmp_path / bloom_repo.release_repo / "releasepatch").is_file()
+                assert (tmp_path / bloom_repo.release_repo / "debianpatch").is_file()
+            with inbranch("rpm/ros-rolling-testpkg-1.0.0-2_9"):
+                assert (tmp_path / bloom_repo.release_repo / "releasepatch").is_file()
+                assert (tmp_path / bloom_repo.release_repo / "rpmpatch").is_file()
 
 
-def test_bloom_release_new_distro_no_patches():
+def test_bloom_release_new_distro_no_patches(tmp_path, rosdistro):
+    source_dist = rosdistro("rolling", {"testpkg": {"type": "git", "version": "1.0.0-1", "url": "https://github.com/rosdistro-bloom-testing/testpkg-release.git"}})
+    dest_dist = rosdistro("jazzy")
+    with chdir(tmp_path):
+        with GitReleaseRepository("testpkg", source_dist, dest_dist).clone() as bloom_repo:
+            bloom_repo.bloom_release()
+            assert dest_dist.repositories["testpkg"].release_repository.version == "1.0.0-2"
+            with inbranch("release/rolling/testpkg"):
+                assert (tmp_path / bloom_repo.release_repo / "releasepatch").is_file()
+            with inbranch("debian/rolling/testpkg"):
+                assert (tmp_path / bloom_repo.release_repo / "releasepatch").is_file()
+                assert (tmp_path / bloom_repo.release_repo / "debianpatch").is_file()
+            with inbranch("debian/rolling/testpkg"):
+                assert (tmp_path / bloom_repo.release_repo / "releasepatch").is_file()
+                assert (tmp_path / bloom_repo.release_repo / "rpmpatch").is_file()
     pass
 
 

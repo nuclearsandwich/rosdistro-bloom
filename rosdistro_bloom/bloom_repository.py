@@ -20,7 +20,7 @@ class GitReleaseRepository:
 
     @cached_property
     def release_repo(self):
-        name = self.url().split("/")[-1]
+        name = self.url.split("/")[-1]
         if name.endswith(".git"):
             name = name[:-4]
 
@@ -30,9 +30,9 @@ class GitReleaseRepository:
 
     @contextmanager
     def clone(self):
-        if not Path(self.release_repo()).is_dir():
-            subprocess.check_call(["git", "clone", self.url()])
-        with chdir(self.release_repo()):
+        if not Path(self.release_repo).is_dir():
+            subprocess.check_call(["git", "clone", self.url])
+        with chdir(self.release_repo):
             self._in_clone = True
             yield self
             self._in_clone = None

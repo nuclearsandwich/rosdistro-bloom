@@ -10,9 +10,9 @@ from bloom.git import inbranch
 from rosdistro_bloom.bloom_repository import GitReleaseRepository
 
 
-@pytest.fixture
-def fixture_path():
-    return Path(os.path.abspath(__file__)).parent / 'fixtures'
+@pytest.fixture(autouse=True)
+def rosdistro_url(monkeypatch):
+    monkeypatch.setenv("ROSDISTRO_INDEX_URL", "https://raw.githubusercontent.com/rosdistro-bloom-testing/rosdistro/main/index-v4.yaml")
 
 
 @pytest.fixture

@@ -27,7 +27,7 @@ class GitReleaseRepository:
 
     @cached_property
     def url(self):
-        return self.dest_distribution.repositories[self.repo_name].url
+        return self.dest_dist.repositories[self.repo_name].release_repository.url
 
     @contextmanager
     def clone(self):

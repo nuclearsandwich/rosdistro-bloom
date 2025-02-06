@@ -96,8 +96,6 @@ class GitReleaseRepository:
         release_inc = str(max(int(source_inc), int(release_track["release_inc"])) + 1)
 
         subprocess.check_call(["git", "bloom-release", "--non-interactive", "--release-increment", release_inc, "--unsafe", dest], stdin=subprocess.DEVNULL, env=os.environ)
-        subprocess.check_call(["git", "push", "origin", "--all", "--force"])
-        subprocess.check_call(["git", "push", "origin", "--tags", "--force"])
         subprocess.check_call(["git", "checkout", "master"])
 
         # Re-read tracks.yaml after release.
@@ -115,3 +113,7 @@ class GitReleaseRepository:
         new_release_inc = str(int(release_track["release_inc"]))
         ver, _inc = dest_release_spec.version.split("-")
         dest_release_spec.version = "-".join([ver, new_release_inc])
+
+    def push(self):
+        subprocess.check_call(["git", "push", "origin", "--all", "--force"])
+        subprocess.check_call(["git", "push", "origin", "--tags", "--force"])

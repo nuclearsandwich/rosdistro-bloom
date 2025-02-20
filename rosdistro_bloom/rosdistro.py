@@ -19,9 +19,13 @@ class RosdistroIndexDirectory(AbstractContextManager):
         if not directory.is_dir():
             raise RuntimeError(f"{directory} is not a directory")
         if not (directory / "index-v4.yaml").exists():
-            raise RuntimeError(f"{directory} does not appear to be a rosdistro index directory (no index-v4.yaml file found).")
+            raise RuntimeError(
+                f"{directory} does not appear to be a rosdistro index directory (no index-v4.yaml file found)."
+            )
         if not (directory / ".git").is_dir():
-            raise RuntimeError(f"{directory} is not a git repository so source distribution cannot be retrieved from git ref")
+            raise RuntimeError(
+                f"{directory} is not a git repository so source distribution cannot be retrieved from git ref"
+            )
         self.directory = directory
 
     def __enter__(self):
@@ -90,8 +94,8 @@ class RosdistroIndexDirectory(AbstractContextManager):
                     dest_repo_data.release_repository.tags["release"] = release_tag
                 dest.repositories[repo_name] = dest_repo_data
             elif (
-                    dest.repositories[repo_name].release_repository is not None
-                    and dest.repositories[repo_name].release_repository.version is None
+                dest.repositories[repo_name].release_repository is not None
+                and dest.repositories[repo_name].release_repository.version is None
             ):
                 dest.repositories[repo_name].release_repository.version = repo_data.release_repository.version
                 retry_repos.append(repo_name)

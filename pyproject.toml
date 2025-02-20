@@ -26,3 +26,6 @@ test = [
 
 [project.scripts]
 rosdistro-bloom = "rosdistro_bloom.cmd:main"
+
+[tool.ruff]
+line-length = 120

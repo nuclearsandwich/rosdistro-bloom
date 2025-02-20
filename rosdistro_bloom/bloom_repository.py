@@ -95,7 +95,11 @@ class GitReleaseRepository:
         # currently in the release track.
         release_inc = str(max(int(source_inc), int(release_track["release_inc"])) + 1)
 
-        subprocess.check_call(["git", "bloom-release", "--non-interactive", "--release-increment", release_inc, "--unsafe", dest], stdin=subprocess.DEVNULL, env=os.environ)
+        subprocess.check_call(
+            ["git", "bloom-release", "--non-interactive", "--release-increment", release_inc, "--unsafe", dest],
+            stdin=subprocess.DEVNULL,
+            env=os.environ,
+        )
         subprocess.check_call(["git", "checkout", "master"])
 
         # Re-read tracks.yaml after release.

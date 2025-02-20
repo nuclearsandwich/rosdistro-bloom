@@ -12,7 +12,9 @@ from rosdistro_bloom.bloom_repository import GitReleaseRepository
 
 @pytest.fixture(autouse=True)
 def rosdistro_url(monkeypatch):
-    monkeypatch.setenv("ROSDISTRO_INDEX_URL", "https://raw.githubusercontent.com/rosdistro-bloom-testing/rosdistro/main/index-v4.yaml")
+    monkeypatch.setenv(
+        "ROSDISTRO_INDEX_URL", "https://raw.githubusercontent.com/rosdistro-bloom-testing/rosdistro/main/index-v4.yaml"
+    )
 
 
 @pytest.fixture
@@ -28,12 +30,31 @@ def rosdistro():
             mock.repositories[name].release_repository.url = spec["url"]
             mock.repositories[name].release_repository.version = spec["version"]
         return mock
+
     return _rosdistro
 
 
 def test_bloom_release_same_distro(tmp_path, rosdistro):
-    source_dist = rosdistro("rolling", {"testpkg": {"type": "git", "version": "1.0.0-1", "url": "https://github.com/rosdistro-bloom-testing/testpkg-release.git"}})
-    dest_dist = rosdistro("rolling", {"testpkg": {"type": "git", "version": "1.0.0-1", "url": "https://github.com/rosdistro-bloom-testing/testpkg-release.git"}})
+    source_dist = rosdistro(
+        "rolling",
+        {
+            "testpkg": {
+                "type": "git",
+                "version": "1.0.0-1",
+                "url": "https://github.com/rosdistro-bloom-testing/testpkg-release.git",
+            }
+        },
+    )
+    dest_dist = rosdistro(
+        "rolling",
+        {
+            "testpkg": {
+                "type": "git",
+                "version": "1.0.0-1",
+                "url": "https://github.com/rosdistro-bloom-testing/testpkg-release.git",
+            }
+        },
+    )
     with chdir(tmp_path):
         with GitReleaseRepository("testpkg", source_dist, dest_dist).clone() as bloom_repo:
             bloom_repo.bloom_release()
@@ -41,8 +62,26 @@ def test_bloom_release_same_distro(tmp_path, rosdistro):
 
 
 def test_bloom_release_same_distro_patches(tmp_path, rosdistro):
-    source_dist = rosdistro("rolling", {"testpkg": {"type": "git", "version": "1.0.0-2", "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git"}})
-    dest_dist = rosdistro("rolling", {"testpkg": {"type": "git", "version": "1.0.0-2", "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git"}})
+    source_dist = rosdistro(
+        "rolling",
+        {
+            "testpkg": {
+                "type": "git",
+                "version": "1.0.0-2",
+                "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git",
+            }
+        },
+    )
+    dest_dist = rosdistro(
+        "rolling",
+        {
+            "testpkg": {
+                "type": "git",
+                "version": "1.0.0-2",
+                "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git",
+            }
+        },
+    )
     with chdir(tmp_path):
         with GitReleaseRepository("testpkg", source_dist, dest_dist).clone() as bloom_repo:
             bloom_repo.bloom_release()
@@ -58,8 +97,26 @@ def test_bloom_release_same_distro_patches(tmp_path, rosdistro):
 
 
 def test_bloom_release_new_distro_no_patches(tmp_path, rosdistro):
-    source_dist = rosdistro("rolling", {"testpkg": {"type": "git", "version": "1.0.0-1", "url": "https://github.com/rosdistro-bloom-testing/testpkg-release.git"}})
-    dest_dist = rosdistro("jazzy", {"testpkg": {"type": "git", "version": "1.0.0-1", "url": "https://github.com/rosdistro-bloom-testing/testpkg-release.git"}})
+    source_dist = rosdistro(
+        "rolling",
+        {
+            "testpkg": {
+                "type": "git",
+                "version": "1.0.0-1",
+                "url": "https://github.com/rosdistro-bloom-testing/testpkg-release.git",
+            }
+        },
+    )
+    dest_dist = rosdistro(
+        "jazzy",
+        {
+            "testpkg": {
+                "type": "git",
+                "version": "1.0.0-1",
+                "url": "https://github.com/rosdistro-bloom-testing/testpkg-release.git",
+            }
+        },
+    )
     with chdir(tmp_path):
         with GitReleaseRepository("testpkg", source_dist, dest_dist).clone() as bloom_repo:
             bloom_repo.copy_release_track()
@@ -72,8 +129,26 @@ def test_bloom_release_new_distro_no_patches(tmp_path, rosdistro):
 
 @pytest.mark.xfail
 def test_bloom_release_new_distro_patches(tmp_path, rosdistro):
-    source_dist = rosdistro("rolling", {"testpkg": {"type": "git", "version": "1.0.0-2", "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git"}})
-    dest_dist = rosdistro("jazzy", {"testpkg": {"type": "git", "version": "1.0.0-2", "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git"}})
+    source_dist = rosdistro(
+        "rolling",
+        {
+            "testpkg": {
+                "type": "git",
+                "version": "1.0.0-2",
+                "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git",
+            }
+        },
+    )
+    dest_dist = rosdistro(
+        "jazzy",
+        {
+            "testpkg": {
+                "type": "git",
+                "version": "1.0.0-2",
+                "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git",
+            }
+        },
+    )
     with chdir(tmp_path):
         with GitReleaseRepository("testpkg", source_dist, dest_dist).clone() as bloom_repo:
             bloom_repo.copy_release_track()
@@ -91,9 +166,30 @@ def test_bloom_release_new_distro_patches(tmp_path, rosdistro):
 
 
 def test_bloom_release_new_platform_patches(tmp_path, rosdistro, monkeypatch):
-    monkeypatch.setenv("ROSDISTRO_INDEX_URL", "https://raw.githubusercontent.com/rosdistro-bloom-testing/rosdistro/humble-to-noble/index-v4.yaml")
-    source_dist = rosdistro("humble", {"testpkg": {"type": "git", "version": "1.0.0-2", "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git"}})
-    dest_dist = rosdistro("humble", {"testpkg": {"type": "git", "version": "1.0.0-2", "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git"}})
+    monkeypatch.setenv(
+        "ROSDISTRO_INDEX_URL",
+        "https://raw.githubusercontent.com/rosdistro-bloom-testing/rosdistro/humble-to-noble/index-v4.yaml",
+    )
+    source_dist = rosdistro(
+        "humble",
+        {
+            "testpkg": {
+                "type": "git",
+                "version": "1.0.0-2",
+                "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git",
+            }
+        },
+    )
+    dest_dist = rosdistro(
+        "humble",
+        {
+            "testpkg": {
+                "type": "git",
+                "version": "1.0.0-2",
+                "url": "https://github.com/rosdistro-bloom-testing/patchpkg-release.git",
+            }
+        },
+    )
     with chdir(tmp_path):
         with GitReleaseRepository("testpkg", source_dist, dest_dist).clone() as bloom_repo:
             bloom_repo.bloom_release()

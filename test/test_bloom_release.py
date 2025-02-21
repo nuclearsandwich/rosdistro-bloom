@@ -14,6 +14,9 @@ def rosdistro_url(monkeypatch):
     monkeypatch.setenv(
         "ROSDISTRO_INDEX_URL", "https://raw.githubusercontent.com/rosdistro-bloom-testing/rosdistro/main/index-v4.yaml"
     )
+    monkeypatch.setenv(
+        "DEBUG", "1"
+    )
 
 
 @pytest.fixture

@@ -42,8 +42,8 @@ class GitReleaseRepository:
         # Copy a bloom .ignored file from source to target distro.
         shutil.copyfile(f"{self.source_dist.name}.ignored", f"{self.dest_dist.name}.ignored")
         with open(".git/rosdistromigratecommitmsg", "w") as f:
-            f.write(f"Propagate {source} ignore file to {dest}.")
-        subprocess.check_call(["git", "add", f"{dest}.ignored"])
+            f.write(f"Propagate {self.source_dist.name} ignore file to {self.dest_dist.name}.")
+        subprocess.check_call(["git", "add", f"{self.dest_dist.name}.ignored"])
         subprocess.check_call(["git", "commit", "-F", ".git/rosdistromigratecommitmsg"])
 
     def copy_release_track(self):

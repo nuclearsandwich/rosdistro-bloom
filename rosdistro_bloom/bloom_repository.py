@@ -7,6 +7,7 @@ from contextlib import contextmanager, chdir
 from pathlib import Path
 from functools import cached_property
 
+from bloom.commands.git.patch.common import get_patch_config, set_patch_config
 from bloom.git import branch_exists
 from rosdistro_bloom.bloom_tracks import read_tracks_file, write_tracks_file
 from rosdistro_bloom.git import ls_remote_branches as git_ls_remote_branches
@@ -66,6 +67,14 @@ class GitReleaseRepository:
             if not branch_exists(newref):
                 # TODO: Add base support to bloom.git.create_branch()
                 subprocess.check_call(["git", "branch", newref, obj])
+            # Update parent reference in patches config to avoid resetting patch branch.
+            if newref.startswith("patches/"):
+                config = get_patch_config(newref)
+                config['parent'] = config['parent'].replace(source, dest)
+                set_patch_config(newref, config)
+
+
+
 
     def bloom_release(self):
         source = self.source_dist.name

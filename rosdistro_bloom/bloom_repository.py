@@ -59,13 +59,13 @@ class GitReleaseRepository:
     def copy_refs(self):
         source = self.source_dist.name
         dest = self.dest_dist.name
-        for ref in git_ls_remote_branches(pattern=f"{source}*"):
-            _obj, ref = ref.split("\t")
+        for ref in git_ls_remote_branches(pattern=f"*{source}*"):
+            obj, ref = ref.split("\t")
             ref = ref[11:]  # strip 'refs/heads/'
             newref = ref.replace(source, dest)
             if not branch_exists(newref):
                 # TODO: Add base support to bloom.git.create_branch()
-                subprocess.check_call(["git", "bloom-branch", "-s", ref, newref])
+                subprocess.check_call(["git", "branch", newref, obj])
 
     def bloom_release(self):
         source = self.source_dist.name

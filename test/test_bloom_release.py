@@ -129,7 +129,6 @@ def test_bloom_release_new_distro_no_patches(tmp_path, rosdistro):
             assert dest_dist.repositories["testpkg"].release_repository.version == "1.0.0-2"
 
 
-@pytest.mark.xfail
 def test_bloom_release_new_distro_patches(tmp_path, rosdistro):
     source_dist = rosdistro(
         "rolling",
